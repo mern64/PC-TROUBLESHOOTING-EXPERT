@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software Troubleshooting</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Software Troubleshooting Assistant</h2>
+
+    <div id="question-section">
+      <p id="question">Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?</p>
+      <p id="hint" class="hint">💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.</p>
+
+      <!-- Picture frame -->
+      <div class="image-frame">
+        <img id="hint-image" src="images/step1.png" alt="Hint image">
+      </div>
+
+      <button onclick="answer('yes')">Yes</button>
+      <button onclick="answer('no')">No</button>
+    </div>
+
+    <div id="result-section" style="display: none;">
+      <h3>Recommendation</h3>
+      <p id="recommendation"></p>
+      <h3>Conclusion</h3>
+      <p id="conclusion"></p>
+      <button onclick="location.reload()">Restart</button>
+    </div>
+
+    <a href="troubleshoot.html" class="back-button">← Back</a>
+  </div>
+
+  <script>
+    const questions = [
+      { 
+        q: "Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?", 
+        hint: "💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.",
+        image: "images/step1.png",
+        yes: "PC is Freezing", 
+        no: "Normal Behavior" 
+      },
+      { 
+        q: "Did the RAM diagnostic tool fail to complete or report an error?", 
+        hint: "💡 Tip: Run Windows Memory Diagnostic Tool from the Start Menu or by typing 'mdsched.exe'.",
+        image: "images/step2.png",
+        yes: {
+          rec: "Replace RAM – Open motherboard and replace RAM on slots.",
+          con: "RAM Fault Detected"
+        },
+        no: "Check CPU usage – Open Task Manager"
+      },
+      { 
+        q: "Is CPU usage at 100% and RAM usage normal (<80%)?", 
+        hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Performance tab.",
+        image: "images/step3.png",
+        yes: {
+          rec: "End high-usage tasks in Task Manager.",
+          con: "CPU Bottleneck Detected"
+        },
+        no: "Continue with malware scan"
+      },
+      { 
+        q: "Did the malware scan return clean and no suspicious processes found?", 
+        hint: "💡 Tip: Use Windows Defender or your preferred antivirus to scan the system.",
+        image: "images/step4.png",
+        yes: "Run disk check – Execute 'chkdsk /f' in Command Prompt",
+        no: {
+          rec: "Remove detected malware.",
+          con: "Malware Detected"
+        }
+      },
+      {
+        q: "Did the disk check report any errors?",
+        hint: "💡 Tip: Run 'chkdsk /f' in Command Prompt (as Administrator) and check Event Viewer for disk errors.",
+        image: "images/step5.png",
+        yes: {
+          rec: "Replace faulty drive.",
+          con: "Disk Failure Detected"
+        },
+        no: "Check CPU/GPU temperature"
+      },
+      {
+        q: "Is CPU or GPU temperature above 90℃ under load?",
+        hint: "💡 Tip: Use Task Manager, HWMonitor or Core Temp to check system temperature.",
+        image: "images/step6.png",
+        yes: {
+          rec: "Clean fans and apply thermal paste.",
+          con: "Overheating Issue"
+        },
+        no: {
+          rec: "Update GPU/Motherboard drivers and BIOS.",
+          con: "System appears healthy"
+        }
+      }
+    ];
+
+    let step = 0;
+
+    function answer(response) {
+      const questionArea = document.getElementById('question');
+      const hintArea = document.getElementById('hint');
+      const imageArea = document.getElementById('hint-image');
+      const recommendation = document.getElementById('recommendation');
+      const conclusion = document.getElementById('conclusion');
+      const resultSection = document.getElementById('result-section');
+
+      const current = questions[step];
+
+      if (step === 0 && response === 'yes') {
+        step++;
+        updateQuestion();
+      } else if (step === 0 && response === 'no') {
+        recommendation.textContent = "No freezing detected.";
+        conclusion.textContent = "System appears stable.";
+        document.getElementById('question-section').style.display = 'none';
+        resultSection.style.display = 'block';
+      } else if (typeof current[response] === 'string') {
+        step++;
+        updateQuestion();
+      } else if (typeof current[response] === 'object') {
+        recommendation.textContent = current[response].rec;
+        conclusion.textContent = current[response].con;
+        document.getElementById('question-section').style.display = 'none';
+        resultSection.style.display = 'block';
+      }
+    }
+
+    function updateQuestion() {
+      const q = questions[step];
+      if (q) {
+        document.getElementById('question').textContent = q.q;
+        document.getElementById('hint').textContent = q.hint || '';
+        document.getElementById('hint-image').src = q.image || '';
+        document.getElementById('hint-image').alt = `Step ${step + 1} illustration`;
+      }
+    }
+  </script>
+</body>
+</html>
