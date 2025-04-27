@@ -16,7 +16,7 @@
 
       <!-- Picture frame -->
       <div class="image-frame">
-        <img id="hint-image" src="images/Bbc Oops GIF by Mystic.gif" alt="Hint image">
+        <img id="hint-image" src="Images/Bbc Oops GIF by Mystic.gif" alt="Hint image">
       </div>
 
       <button onclick="answer('yes')">Yes</button>
@@ -55,7 +55,7 @@
       { 
         q: "Did the RAM diagnostic tool fail to complete or report an error?", 
         hint: "💡 Tip: Run Windows Memory Diagnostic Tool from the Start Menu or by typing 'mdsched.exe'.",
-        image: "images/ram-failure.jpg",
+        image: "Images/ram-failure.jpg",
         yes: {
           rec: "Replace RAM – Open motherboard and replace RAM on slots.",
           con: "RAM Fault Detected beause of RAM failure.",
@@ -65,11 +65,11 @@
       { 
         q: "Is CPU usage is above 90% and MEMORY usage normal (below <80%)?", 
         hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab.",
-        image: "images/CPU-usage.png",
+        image: "Images/CPU-usage.png",
         yes: {
           rec: "End high-usage tasks in Task Manager by Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab and Right Click on the task and select 'End Task'.",
           con: "Apps are using too much CPU.",
-          resultImage: "images/endTask.png"
+          resultImage: "Images/endTask.png"
         },
         no: "Continue with malware scan"
       },
@@ -96,7 +96,7 @@
       {
         q: "Is CPU or GPU temperature above 90℃ under load?",
         hint: "💡 Tip: Use Task Manager, HWMonitor or Core Temp to check system temperature.",
-        image: "images/step6.png",
+        image: "Images/step6.png",
         yes: {
           rec: "Clean fans and apply thermal paste.",
           con: "Overheating Issue"
