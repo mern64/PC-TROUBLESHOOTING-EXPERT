@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Software Troubleshooting</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,19 +16,29 @@
 
       <!-- Picture frame -->
       <div class="image-frame">
-        <img id="hint-image" src="images/step1.png" alt="Hint image">
+        <img id="hint-image" src="images/Bbc Oops GIF by Mystic.gif" alt="Hint image">
       </div>
 
       <button onclick="answer('yes')">Yes</button>
       <button onclick="answer('no')">No</button>
+    </button>
     </div>
 
     <div id="result-section" style="display: none;">
-      <h3>Recommendation</h3>
-      <p id="recommendation"></p>
-      <h3>Conclusion</h3>
-      <p id="conclusion"></p>
-      <button onclick="location.reload()">Restart</button>
+      <div class="solution-container">
+        <h3>Recommendation Action</h3>
+        <p id="recommendation"></p>
+      </div>
+      
+      <div class="image-frame">
+        <img id="result-image" src="" alt="Result illustration">
+      </div>
+ 
+      <div class="conclusion-container">
+        <h3>Conclusion</h3>
+        <p id="conclusion"></p>
+        <button onclick="location.reload()">Restart</button>
+      </div>
     </div>
 
     <a href="troubleshoot.html" class="back-button">← Back</a>
@@ -39,27 +49,27 @@
       { 
         q: "Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?", 
         hint: "💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.",
-        image: "images/step1.png",
         yes: "PC is Freezing", 
         no: "Normal Behavior" 
       },
       { 
         q: "Did the RAM diagnostic tool fail to complete or report an error?", 
         hint: "💡 Tip: Run Windows Memory Diagnostic Tool from the Start Menu or by typing 'mdsched.exe'.",
-        image: "images/step2.png",
+        image: "images/ram-failure.jpg",
         yes: {
           rec: "Replace RAM – Open motherboard and replace RAM on slots.",
-          con: "RAM Fault Detected"
+          con: "RAM Fault Detected beause of RAM failure.",
         },
         no: "Check CPU usage – Open Task Manager"
       },
       { 
-        q: "Is CPU usage at 100% and RAM usage normal (<80%)?", 
-        hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Performance tab.",
-        image: "images/step3.png",
+        q: "Is CPU usage is above 90% and MEMORY usage normal (below <80%)?", 
+        hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab.",
+        image: "images/CPU-usage.png",
         yes: {
-          rec: "End high-usage tasks in Task Manager.",
-          con: "CPU Bottleneck Detected"
+          rec: "End high-usage tasks in Task Manager by Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab and Right Click on the task and select 'End Task'.",
+          con: "Apps are using too much CPU.",
+          resultImage: "images/endTask.png"
         },
         no: "Continue with malware scan"
       },
@@ -124,6 +134,16 @@
       } else if (typeof current[response] === 'object') {
         recommendation.textContent = current[response].rec;
         conclusion.textContent = current[response].con;
+
+        // Add this to handle the result image
+        const resultImage = document.getElementById('result-image');
+        if (current[response].resultImage) {
+          resultImage.src = current[response].resultImage;
+          resultImage.style.display = 'block';
+        } else {
+          resultImage.style.display = 'none';
+        }
+        
         document.getElementById('question-section').style.display = 'none';
         resultSection.style.display = 'block';
       }

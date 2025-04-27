@@ -121,3 +121,108 @@ p {
     height: auto;
     border-radius: 5px;
 }
+
+.solution-container {
+    background-color: #f0f8ff;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    text-align: left;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.solution-container h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.solution-container p {
+    margin-bottom: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.conclusion-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.conclusion-container h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#result-section button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+#result-section button:hover {
+    background-color: #0056b3;
+}
+
+.solution-container, 
+.conclusion-container {
+    width: 500px; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* For better mobile responsiveness */
+@media (max-width: 768px) {
+    .solution-container,
+    .conclusion-container {
+        width: 90%;
+        min-width: unset;
+    }
+}
+
+/* Add this to your existing CSS */
+#question-section button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+#question-section button:hover {
+    background-color: #0056b3;
+}
+
+#question-section button[onclick*="yes"] {
+    background-color: #28a745;  
+}
+
+#question-section button[onclick*="yes"]:hover {
+    background-color: #218838;
+}
+
+#question-section button[onclick*="no"] {
+    background-color: #dc3545;  
+}
+
+#question-section button[onclick*="no"]:hover {
+    background-color: #c82333;
+}
+
+
+
