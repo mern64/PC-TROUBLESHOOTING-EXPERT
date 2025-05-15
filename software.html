@@ -14,14 +14,21 @@
       <p id="question">Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?</p>
       <p id="hint" class="hint">💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.</p>
 
-      <!-- Picture frame -->
       <div class="image-frame">
         <img id="hint-image" src="Images/Bbc Oops GIF by Mystic.gif" alt="Hint image">
       </div>
 
       <button onclick="answer('yes')">Yes</button>
       <button onclick="answer('no')">No</button>
-    </button>
+      <button onclick="showWhy()">Why?</button>
+
+      <div id="explanation-box" style="display: none; margin-top: 20px;">
+        <div class="solution-container">
+          <h3>Explanation</h3>
+          <p id="explanation-text"></p>
+          <button onclick="closeExplanation()">Close</button>
+        </div>
+      </div>
     </div>
 
     <div id="result-section" style="display: none;">
@@ -31,84 +38,112 @@
       </div>
       
       <div class="image-frame">
-        <img id="result-image" src="" alt="Result illustration">
+        <img id="result-image" src="" alt="Result image" style="display: none;">
       </div>
  
       <div class="conclusion-container">
         <h3>Conclusion</h3>
         <p id="conclusion"></p>
-        <button onclick="location.reload()">Restart</button>
       </div>
+
+      <div id="how-section" class="conclusion-container" style="display: none;">
+        <h3>How It Was Concluded</h3>
+        <p id="how-text"></p>
+      </div>
+
+      <button onclick="location.reload()">Restart</button>
     </div>
 
     <a href="troubleshoot.html" class="back-button">← Back</a>
   </div>
 
-  <script>
-    const questions = [
-      { 
-        q: "Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?", 
-        hint: "💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.",
-        yes: "PC is Freezing", 
-        no: "Normal Behavior" 
-      },
-      { 
-        q: "Did the RAM diagnostic tool fail to complete or report an error?", 
-        hint: "💡 Tip: Run Windows Memory Diagnostic Tool from the Start Menu or by typing 'mdsched.exe'.",
-        image: "Images/ram-failure.jpg",
-        yes: {
-          rec: "Replace RAM – Open motherboard and replace RAM on slots.",
-          con: "RAM Fault Detected beause of RAM failure.",
-        },
-        no: "Check CPU usage – Open Task Manager"
-      },
-      { 
-        q: "Is CPU usage is above 90% and MEMORY usage normal (below <80%)?", 
-        hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab.",
-        image: "Images/CPU-Usage.png",
-        yes: {
-          rec: "End high-usage tasks in Task Manager by Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage on the Processes tab and Right Click on the task and select 'End Task'.",
-          con: "Apps are using too much CPU.",
-          resultImage: "Images/endTask.png"
-        },
-        no: "Continue with malware scan"
-      },
-      { 
-        q: "Did the malware scan return clean and no suspicious processes found?", 
-        hint: "💡 Tip: Use Windows Defender or your preferred antivirus to scan the system.",
-        image: "Images/step4.png",
-        yes: "Run disk check – Execute 'chkdsk /f' in Command Prompt",
-        no: {
-          rec: "Remove detected malware.",
-          con: "Malware Detected"
-        }
-      },
-      {
-        q: "Did the disk check report any errors?",
-        hint: "💡 Tip: Run 'chkdsk /f' in Command Prompt (as Administrator) and check Event Viewer for disk errors.",
-        image: "Images/step5.png",
-        yes: {
-          rec: "Replace faulty drive.",
-          con: "Disk Failure Detected"
-        },
-        no: "Check CPU/GPU temperature"
-      },
-      {
-        q: "Is CPU or GPU temperature above 90℃ under load?",
-        hint: "💡 Tip: Use Task Manager, HWMonitor or Core Temp to check system temperature.",
-        image: "Images/step6.png",
-        yes: {
-          rec: "Clean fans and apply thermal paste.",
-          con: "Overheating Issue"
-        },
-        no: {
-          rec: "Update GPU/Motherboard drivers and BIOS.",
-          con: "System appears healthy"
-        }
-      }
-    ];
 
-    let step = 0;
+  <script>
+ const questions = [
+  {
+    q: "Is your PC randomly rebooting or becoming unresponsive for over 60 seconds?",
+    hint: "💡 Example: Your PC restarts by itself or freezes for over a minute without responding to input.",
+    yes: "PC is Freezing",
+    no: "Normal Behavior",
+    why: "To identify if the system is showing signs of instability, such as freezing or crashing.",
+  },
+  {
+    q: "Did the RAM diagnostic tool fail to complete or report an error?",
+    hint: "💡 Tip: Run Windows Memory Diagnostic Tool from the Start Menu or by typing 'mdsched.exe'.",
+    image: "Images/ram-failure.jpg",
+    yes: {
+      rec: "Replace RAM – Open your PC case and install new memory modules in the RAM slots.",
+      con: "RAM Fault Detected due to RAM failure.",
+      resultImage: "Images/replaceRAM.jpg",
+      how: "Since you answered 'Yes', and the test failed or showed errors, the system concludes that the RAM is defective and needs replacement."
+    },
+    no: "Check CPU usage – Open Task Manager",
+    why: "To determine if RAM is the source of the freezing or crashing behavior.",
+    how: "Because you answered 'No', the system rules out RAM failure and moves on to check CPU usage as a potential issue."
+  },
+  {
+    q: "Is CPU usage above 90% while MEMORY usage is normal (below 80%)?",
+    hint: "💡 Tip: Open Task Manager (Ctrl + Shift + Esc) and view CPU & RAM usage under the 'Processes' tab.",
+    image: "Images/CPU-Usage.png",
+    yes: {
+      rec: "End high-usage tasks – Use Task Manager to identify and end resource-heavy applications.",
+      con: "Apps are using too much CPU.",
+      resultImage: "Images/endTask.png",
+      how: "Your 'Yes' response indicates the CPU is under heavy load, even though memory usage is normal. This points to resource-intensive apps as the issue."
+    },
+    no: "Continue with malware scan",
+    why: "To check if a CPU bottleneck is causing the system to freeze or lag.",
+    how: "Since you answered 'No', high CPU usage is ruled out, so the system proceeds to investigate malware as a possible cause."
+  },
+  {
+    q: "Did the malware scan return clean and no suspicious processes found?",
+    hint: "💡 Tip: Use Windows Defender or any trusted antivirus to perform a full system scan.",
+    image: "Images/noVirus.png",
+    yes: "Run disk check – Execute 'chkdsk /f' in Command Prompt",
+    no: {
+      resultImage: "Images/malwareDetected.png",
+      rec: "Remove detected malware using antivirus software or manual removal techniques.",
+      con: "Malware Detected",
+      how: "You answered 'No', indicating malware was found. The system concludes malicious software is affecting performance."
+    },
+    why: "To rule out viruses or malicious background programs causing the issue.",
+    how: "You answered 'Yes', confirming no malware was found. So the system moves on to evaluate disk health as the next possible cause."
+  },
+  {
+    q: "Did the disk check report any errors?",
+    hint: "💡 Tip: Run 'chkdsk /f' in Command Prompt (Admin mode).",
+    image: "Images/check-Disk.png",
+    yes: {
+      rec: "Replace faulty drive – Back up your data and replace the hard drive or SSD.",
+      con: "Disk Failure Detected",
+      resultImage: "Images/replaceHardDisk.jpg",
+      how: "Since 'Yes' was selected, and disk errors were reported, the system concludes that storage hardware is failing."
+    },
+    no: "Check CPU/GPU temperature",
+    why: "To verify whether a failing disk is causing slowdowns or crashes.",
+  },
+  {
+    q: "Is CPU or GPU temperature above 90℃ under load?",
+    hint: "💡 Tip: Use Task Manager, HWMonitor, or GPU-Z to check system temperature.",
+    image: "Images/tempCheck.png",
+    yes: {
+      rec: "Clean fans and apply thermal paste to improve heat dissipation.",
+      resultImage: "Images/cleanThermalFan.png",
+      con: "Overheating Issue",
+      how: "You answered 'Yes', showing that temperatures are critically high. The system concludes overheating is likely causing instability."
+    },
+    no: {
+      rec: "Update GPU/Motherboard drivers and BIOS to the latest stable version.",
+      resultImage: "Images/updateDrivers.jpg",
+      con: "Drivers Issue",
+      how: "Your 'No' response shows all temperatures are within safe range. The system concludes there are no thermal issues, but there are maybe drivers issues."
+    },
+    why: "To detect overheating, which can lead to automatic shutdowns or performance throttling.",
+  }
+];
+
+    // Initialize the first question
+   let step = 0;
 
     function answer(response) {
       const questionArea = document.getElementById('question');
@@ -117,6 +152,8 @@
       const recommendation = document.getElementById('recommendation');
       const conclusion = document.getElementById('conclusion');
       const resultSection = document.getElementById('result-section');
+      const howSection = document.getElementById('how-section');
+      const howText = document.getElementById('how-text');
 
       const current = questions[step];
 
@@ -126,6 +163,8 @@
       } else if (step === 0 && response === 'no') {
         recommendation.textContent = "No freezing detected.";
         conclusion.textContent = "System appears stable.";
+        howSection.style.display = 'block';
+        howText.textContent = "The system assumes stability because you didn't experience unresponsiveness or reboots.";
         document.getElementById('question-section').style.display = 'none';
         resultSection.style.display = 'block';
       } else if (typeof current[response] === 'string') {
@@ -135,7 +174,6 @@
         recommendation.textContent = current[response].rec;
         conclusion.textContent = current[response].con;
 
-        // Add this to handle the result image
         const resultImage = document.getElementById('result-image');
         if (current[response].resultImage) {
           resultImage.src = current[response].resultImage;
@@ -143,7 +181,14 @@
         } else {
           resultImage.style.display = 'none';
         }
-        
+
+        if (current[response].how) {
+          howText.textContent = current[response].how;
+          howSection.style.display = 'block';
+        } else {
+          howSection.style.display = 'none';
+        }
+
         document.getElementById('question-section').style.display = 'none';
         resultSection.style.display = 'block';
       }
@@ -158,6 +203,25 @@
         document.getElementById('hint-image').alt = `Step ${step + 1} illustration`;
       }
     }
+
+    function showWhy() {
+      const explanationBox = document.getElementById('explanation-box');
+      const explanationText = document.getElementById('explanation-text');
+      explanationText.textContent = questions[step].why || "No explanation available.";
+      explanationBox.style.display = 'block';
+    }
+
+    function showHow() {
+      const explanationBox = document.getElementById('explanation-box');
+      const explanationText = document.getElementById('explanation-text');
+      explanationText.textContent = questions[step].how || "No explanation available.";
+      explanationBox.style.display = 'block';
+    }
+
+    function closeExplanation() {
+      document.getElementById('explanation-box').style.display = 'none';
+    }
+
   </script>
 </body>
 </html>

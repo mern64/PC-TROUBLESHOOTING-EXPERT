@@ -1,10 +1,211 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>hardware</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hardware Troubleshooting</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="container">
+    <h2>Hardware Troubleshooting Assistant</h2>
+
+    <div id="question-section">
+      <p id="question"></p>
+      <p id="hint" class="hint"></p>
+
+      <div class="image-frame">
+        <img id="hint-image" src="" alt="Hint image">
+      </div>
+
+      <button onclick="answer('yes')">Yes</button>
+      <button onclick="answer('no')">No</button>
+      <button onclick="showWhy()">Why?</button>
+
+      <div id="explanation-box" style="display: none; margin-top: 20px;">
+        <div class="solution-container">
+          <h3>Explanation</h3>
+          <p id="explanation-text"></p>
+          <button onclick="closeExplanation()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result-section" style="display: none;">
+      <div class="solution-container">
+        <h3>Recommendation Action</h3>
+        <p id="recommendation"></p>
+      </div>
+
+      <div class="conclusion-container">
+        <h3>Conclusion</h3>
+        <p id="conclusion"></p>
+      </div>
+
+      <div id="how-section" class="conclusion-container" style="display: none;">
+        <h3>How It Was Concluded</h3>
+        <p id="how-text"></p>
+      </div>
+
+      <button onclick="location.reload()">Restart</button>
+    </div>
+
+    <a href="troubleshoot.html" class="back-button">← Back</a>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "Do you see any power indicator lights on your PC or hear the motherboard fan spin when pressing the power button?",
+        hint: "💡 Check LED lights and motherboard fan activity after pressing the power button.",
+        yes: "Proceed to display diagnostics",
+        no: {
+          rec: "Perform a Paper Clip Test on PSU.",
+          con: "PC does not turn ON",
+          how: "Because you answered 'No', and there's no power indication, the system concludes the PC isn't turning on and suspects a PSU failure."
+        },
+        why: "To determine if the system is receiving any power at all."
+      },
+      {
+        q: "Did the PSU fan spin during the paper clip test and show voltage output on the 24-pin connector?",
+        hint: "💡 Bridge green and black pins with a paperclip and check PSU fan and multimeter voltage.",
+        yes: "Check onboard video and GPU output",
+        no: {
+          rec: "Replace the PSU.",
+          con: "PSU has no power",
+          how: "You answered 'No', meaning the PSU failed both tests, so the system concludes it is faulty and needs replacement."
+        },
+        why: "To verify if the PSU is operational."
+      },
+      {
+        q: "Does the PSU fan spin but there is no display output?",
+        hint: "💡 Confirm fan movement but no display after connecting PSU to motherboard.",
+        yes: "Check onboard video output",
+        no: {
+          rec: "Inspect GPU or display setup.",
+          con: "Display issue despite PSU working",
+          how: "Because you confirmed the PSU is functional but there's no display, the system shifts focus to display or GPU faults."
+        },
+        why: "To see if the system boots without video output, indicating a display path issue."
+      },
+      {
+        q: "Does the system display output when the GPU is removed?",
+        hint: "💡 Remove the GPU and connect monitor to the motherboard’s video port.",
+        yes: {
+          rec: "Replace the GPU.",
+          con: "Onboard video works",
+          how: "You answered 'Yes', confirming onboard video works when the GPU is removed, which indicates the GPU is faulty."
+        },
+        no: "Check monitor and cables",
+        why: "To check if the onboard video is functional when GPU is not present."
+      },
+      {
+        q: "Is the monitor power LED on?",
+        hint: "💡 Check if the monitor’s power light is glowing.",
+        yes: "Check cable and input source",
+        no: {
+          rec: "Check monitor power and cable connections.",
+          con: "Monitor not powered",
+          how: "Your answer 'No' shows the monitor has no power, leading the system to suspect monitor or cable failure."
+        },
+        why: "To ensure the monitor itself is turning on."
+      },
+      {
+        q: "Is the video cable connected securely and input source set correctly?",
+        hint: "💡 Double-check both cable ends and input settings on the monitor.",
+        yes: "Check GPU connection",
+        no: {
+          rec: "Reconnect cable and choose correct input source.",
+          con: "Incorrect monitor input or loose cable",
+          how: "Because the cable was loose or source was wrong, the system concludes this caused the 'no signal' issue."
+        },
+        why: "To confirm the monitor is configured to receive input correctly."
+      },
+      {
+        q: "Does the monitor display 'No Signal' when connected to another PC?",
+        hint: "💡 Test the monitor on a different working computer.",
+        yes: {
+          rec: "Replace the monitor.",
+          con: "Monitor is faulty",
+          how: "Since the monitor shows 'No Signal' on another PC, the system determines the monitor is faulty."
+        },
+        no: "Check GPU seating",
+        why: "To rule out whether the monitor is the problem."
+      },
+      {
+        q: "Is the GPU seated properly and PCie power cable connected?",
+        hint: "💡 Ensure the GPU is fully inserted in its slot and the power cable is attached.",
+        yes: "Listen for beep code",
+        no: {
+          rec: "Reseat GPU and reconnect power cable.",
+          con: "GPU not seated properly",
+          how: "Your 'No' response indicates the GPU isn't seated or powered, which can stop video output."
+        },
+        why: "To check if physical GPU issues are preventing display output."
+      },
+      {
+        q: "Do you hear any beep codes when powering on?",
+        hint: "💡 Beep codes may indicate RAM, CPU, or GPU faults. Refer to BIOS manual.",
+        yes: {
+          rec: "Refer to your motherboard's manual to interpret beep code.",
+          con: "Beep code detected",
+          how: "You answered 'Yes', confirming a beep sequence is heard, so the system refers you to BIOS code documentation."
+        },
+        no: {
+          rec: "Inspect motherboard for visible damage.",
+          con: "No beep and no display",
+          how: "You answered 'No', meaning no POST feedback is given. The system suspects motherboard failure or no boot process."
+        },
+        why: "To determine if POST (Power On Self Test) detects hardware problems."
+      }
+    ];
+
+    let step = 0;
+
+    function answer(response) {
+      const question = questions[step];
+      const recommendation = document.getElementById('recommendation');
+      const conclusion = document.getElementById('conclusion');
+      const howText = document.getElementById('how-text');
+
+      if (typeof question[response] === 'object') {
+        recommendation.textContent = question[response].rec;
+        conclusion.textContent = question[response].con;
+        howText.textContent = question[response].how || '';
+        document.getElementById('how-section').style.display = 'block';
+        document.getElementById('question-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+      } else if (typeof question[response] === 'string') {
+        step++;
+        updateQuestion();
+      }
+    }
+
+    function updateQuestion() {
+      const q = questions[step];
+      document.getElementById('question').textContent = q.q;
+      document.getElementById('hint').textContent = q.hint || '';
+      document.getElementById('hint-image').src = q.image || '';
+      document.getElementById('hint-image').alt = `Step ${step + 1}`;
+    }
+
+    function showWhy() {
+      const explanationText = document.getElementById('explanation-text');
+      explanationText.textContent = questions[step].why || "No explanation available.";
+      document.getElementById('explanation-box').style.display = 'block';
+    }
+
+    function showHow() {
+      const explanationText = document.getElementById('explanation-text');
+      explanationText.textContent = questions[step].how || "No explanation available.";
+      document.getElementById('explanation-box').style.display = 'block';
+    }
+
+    function closeExplanation() {
+      document.getElementById('explanation-box').style.display = 'none';
+    }
+
+    window.onload = updateQuestion;
+  </script>
 </body>
 </html>

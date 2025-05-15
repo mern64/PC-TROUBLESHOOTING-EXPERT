@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
+            "url": "D:\\User\\OneDrive - UNIVERSITY UTARA MALAYSIA\\Documents\\Assignments\\Assignment SEM 4\\Expert System\\PC TROUBLESHOOTING EXPERT\\index.html",
             "webRoot": "${workspaceFolder}"
         }
     ]
