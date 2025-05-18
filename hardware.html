@@ -15,7 +15,7 @@
       <p id="hint" class="hint"></p>
 
       <div class="image-frame">
-        <img id="hint-image" src="" alt="Hint image">
+        <img id="hint-image" src="Images/Start-up.gif" alt="Hint image">
       </div>
 
       <button onclick="answer('yes')">Yes</button>
@@ -31,12 +31,16 @@
       </div>
     </div>
 
-    <div id="result-section" style="display: none;">
+   <div id="result-section" style="display: none;">
       <div class="solution-container">
         <h3>Recommendation Action</h3>
         <p id="recommendation"></p>
       </div>
-
+      
+      <div class="image-frame">
+        <img id="result-image" src="" alt="Result image" style="display: none;">
+      </div>
+ 
       <div class="conclusion-container">
         <h3>Conclusion</h3>
         <p id="conclusion"></p>
@@ -59,40 +63,47 @@
         q: "Do you see any power indicator lights on your PC or hear the motherboard fan spin when pressing the power button?",
         hint: "💡 Check LED lights and motherboard fan activity after pressing the power button.",
         yes: "Proceed to display diagnostics",
+        image: "Images/Start-up.gif",
         no: {
-          rec: "Perform a Paper Clip Test on PSU.",
+          rec: "Check Power Supply Unit (PSU) Physical condition.",
           con: "PC does not turn ON",
-          how: "Because you answered 'No', and there's no power indication, the system concludes the PC isn't turning on and suspects a PSU failure."
+          how: "Because you answered 'No', and there's no power indication, the system concludes the PC isn't turning on and suspects a hardware failure.",
+          
         },
         why: "To determine if the system is receiving any power at all."
       },
       {
-        q: "Did the PSU fan spin during the paper clip test and show voltage output on the 24-pin connector?",
-        hint: "💡 Bridge green and black pins with a paperclip and check PSU fan and multimeter voltage.",
-        yes: "Check onboard video and GPU output",
+        q: "Did the Power Supply Unit (PSU) fan spin during the paper clip test?",
+        hint: "💡 Bridge green and black pins with a paperclip and check Power Supply Unit (PSU) fan.",
+        yes: "Check onboard video and Grahical Processing Unit (GPU) output",
+        image: "Images/PaperClipTest.gif",
         no: {
-          rec: "Replace the PSU.",
-          con: "PSU has no power",
-          how: "You answered 'No', meaning the PSU failed both tests, so the system concludes it is faulty and needs replacement."
+          rec: "Replace the Power Supply Unit (PSU).",
+          con: "Power Supply Unit (PSU) has failed meaning it is faulty.",
+          resultImage: "Images/replacePSU.jpg",
+          how: "You answered 'No', meaning the Power Supply Unit failed both tests, so the system concludes it is faulty and needs replacement.",
         },
-        why: "To verify if the PSU is operational."
+        why: "To verify if the Power Supply Unit (PSU) is operational."
       },
       {
-        q: "Does the PSU fan spin but there is no display output?",
-        hint: "💡 Confirm fan movement but no display after connecting PSU to motherboard.",
+        q: "Does the Power Supply Unit (PSU) fan spin but there is no display output?",
+        hint: "💡 Confirm fan movement but no display after connecting Power Supply Unit (PSU) to motherboard.",
         yes: "Check onboard video output",
+        image: "Images/noDisplay.jpg",
         no: {
-          rec: "Inspect GPU or display setup.",
-          con: "Display issue despite PSU working",
-          how: "Because you confirmed the PSU is functional but there's no display, the system shifts focus to display or GPU faults."
+          rec: "Inspect Motherboard for any shorted or damaged.",
+          con: "Damaged/Shorted motherboard can cause the display issue despite Power Supply Unit (PSU) working",
+          resultImage: "Images/damagedMotherboard.jpg",
+          how: "You answered 'No', meaning the Power Supply Unit is running but there's no display, the system shifts focus to motherboard issues."
         },
         why: "To see if the system boots without video output, indicating a display path issue."
       },
       {
-        q: "Does the system display output when the GPU is removed?",
+        q: "Does the system display output when the Graphical Processing Unit (GPU) is removed?",
         hint: "💡 Remove the GPU and connect monitor to the motherboard’s video port.",
+        image: "Images/removeGPU.jpg",
         yes: {
-          rec: "Replace the GPU.",
+          rec: "Replace the Graphical Processing Unit (GPU).",
           con: "Onboard video works",
           how: "You answered 'Yes', confirming onboard video works when the GPU is removed, which indicates the GPU is faulty."
         },
@@ -103,6 +114,7 @@
         q: "Is the monitor power LED on?",
         hint: "💡 Check if the monitor’s power light is glowing.",
         yes: "Check cable and input source",
+        image: "Images/monitorLED.png",
         no: {
           rec: "Check monitor power and cable connections.",
           con: "Monitor not powered",
@@ -112,11 +124,13 @@
       },
       {
         q: "Is the video cable connected securely and input source set correctly?",
-        hint: "💡 Double-check both cable ends and input settings on the monitor.",
+        hint: "💡 Double-check both cable ends and input settings on the monitor to ensure correct input sources.",
         yes: "Check GPU connection",
+        image: "Images/monitorInput.gif",
         no: {
           rec: "Reconnect cable and choose correct input source.",
           con: "Incorrect monitor input or loose cable",
+          resultImage: "Images/reconnectHDMI.jpg",
           how: "Because the cable was loose or source was wrong, the system concludes this caused the 'no signal' issue."
         },
         why: "To confirm the monitor is configured to receive input correctly."
@@ -168,17 +182,28 @@
       const conclusion = document.getElementById('conclusion');
       const howText = document.getElementById('how-text');
 
-      if (typeof question[response] === 'object') {
-        recommendation.textContent = question[response].rec;
-        conclusion.textContent = question[response].con;
-        howText.textContent = question[response].how || '';
-        document.getElementById('how-section').style.display = 'block';
-        document.getElementById('question-section').style.display = 'none';
-        document.getElementById('result-section').style.display = 'block';
-      } else if (typeof question[response] === 'string') {
-        step++;
-        updateQuestion();
-      }
+     if (typeof question[response] === 'object') {
+  recommendation.textContent = question[response].rec;
+  conclusion.textContent = question[response].con;
+  howText.textContent = question[response].how || '';
+  document.getElementById('how-section').style.display = 'block';
+
+  // Show result image if available
+  const resultImage = document.getElementById('result-image');
+  if (question[response].resultImage) {
+    resultImage.src = question[response].resultImage;
+    resultImage.style.display = 'block';
+  } else {
+    resultImage.style.display = 'none';
+  }
+
+  document.getElementById('question-section').style.display = 'none';
+  document.getElementById('result-section').style.display = 'block';
+} else if (typeof question[response] === 'string') {
+  step++;
+  updateQuestion();
+}
+
     }
 
     function updateQuestion() {
