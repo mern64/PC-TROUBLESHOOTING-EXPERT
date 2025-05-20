@@ -5,7 +5,7 @@
   <title>Our Team</title>
   <style>
     * {
-      font-family: Nunito, sans-serif;
+      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif, sans-serif;
     }
 
     .text-blk {
@@ -42,7 +42,9 @@
 
     .sub-heading-text {
       line-height: 30px;
-      color: rgb(122, 122, 122);
+      font-family:monospace;
+      font-size: large;
+      color: rgb(0, 0, 0);
     }
 
     .name {
@@ -66,8 +68,10 @@
 
     .card-img {
       width: 100%;
-      height: 250px;
+      height: auto;
       max-width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* <-- added shadow */
     }
 
     .card-container {
@@ -102,6 +106,28 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
+body {
+	background: linear-gradient(354deg,#def61a,#f29be4,#1e2d66,#b6c2cd);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+}
+
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+
+
 
     @media (max-width: 768px) {
       .card-container {
@@ -119,32 +145,32 @@
   <div class="responsive-container-block outer-container">
     <div class="responsive-container-block inner-container">
       <div class="headings-container">
-        <p class="text-blk heading-text">Meet our dream team</p>
+        <p class="text-blk heading-text">Meet our team for </p>
+        <p class="text-blk heading-text">PC Troubleshooting Expert</p>
         <p class="text-blk sub-heading-text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fringilla et sagittis,
-          vestibulum risus lacus sit.
+          The team behind the PC Troubleshooting Expert is a group of dedicated individuals with a passion for technology and a commitment to helping others. Our diverse backgrounds and expertise allow us to provide comprehensive solutions to your computer issues. We are here to ensure that your PC runs smoothly and efficiently, so you can focus on what matters most to you.
         </p>
       </div>
       <div class="team-members-container">
         <div class="card-container">
           <div class="card">
-            <img class="card-img" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/ft12.svg" alt="Team member 1">
+            <img class="card-img" src="Images/Meran.jpeg" alt="Team member 1">
             <p class="text-blk name">Imran Mansor</p>
-            <p class="text-blk position">CEO</p>
+            <p class="text-blk position">Programmer</p>
           </div>
         </div>
         <div class="card-container">
           <div class="card">
-            <img class="card-img" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/ft13.svg" alt="Team member 2">
+            <img class="card-img" src="Images/Amir.jpeg" alt="Team member 2">
             <p class="text-blk name">Wan Amir</p>
-            <p class="text-blk position">CTO</p>
+            <p class="text-blk position">Team Leader</p>
           </div>
         </div>
         <div class="card-container">
           <div class="card">
-            <img class="card-img" src="https://workik-widget-assets.s3.amazonaws.com/widget-assets/images/ft14.svg" alt="Team member 3">
+            <img class="card-img" src="Images/QueZyril.jpeg" alt="Team member 3">
             <p class="text-blk name">Qhuzairil Azhar</p>
-            <p class="text-blk position">Lead Designer</p>
+            <p class="text-blk position">Designer</p>
           </div>
         </div>
               <a class="back-button" href="index.html">← Back to Home</a>
