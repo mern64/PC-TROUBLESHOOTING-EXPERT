@@ -48,6 +48,8 @@
         <p id="conclusion"></p>
       </div>
 
+      <button onclick="showHow()">How?</button>
+      
       <div id="how-section" class="conclusion-container" style="display: none;">
         <h3>How It Was Concluded</h3>
         <p id="how-text"></p>
@@ -102,7 +104,7 @@
       },
       {
         q: "Does the system display output when the Graphical Processing Unit (GPU) is removed?",
-        hint: "💡 Remove the GPU and connect monitor to the motherboard’s video port.",
+        hint: "💡 Remove the GPU and connect monitor to the motherboard's video port.",
         image: "Images/removeGPU.jpg",
         yes: {
           rec: "Replace the Graphical Processing Unit (GPU).",
@@ -114,7 +116,7 @@
       },
       {
         q: "Is the monitor power LED on?",
-        hint: "💡 Check if the monitor’s power light is glowing.",
+        hint: "💡 Check if the monitor's power light is glowing.",
         yes: "Check cable and input source",
         image: "Images/monitorLED.png",
         no: {
@@ -184,28 +186,29 @@
       const conclusion = document.getElementById('conclusion');
       const howText = document.getElementById('how-text');
 
-     if (typeof question[response] === 'object') {
-  recommendation.textContent = question[response].rec;
-  conclusion.textContent = question[response].con;
-  howText.textContent = question[response].how || '';
-  document.getElementById('how-section').style.display = 'block';
+      if (typeof question[response] === 'object') {
+        recommendation.textContent = question[response].rec;
+        conclusion.textContent = question[response].con;
+        howText.textContent = question[response].how || '';
+        
+        // Hide the how section initially
+        document.getElementById('how-section').style.display = 'none';
 
-  // Show result image if available
-  const resultImage = document.getElementById('result-image');
-  if (question[response].resultImage) {
-    resultImage.src = question[response].resultImage;
-    resultImage.style.display = 'block';
-  } else {
-    resultImage.style.display = 'none';
-  }
+        // Show result image if available
+        const resultImage = document.getElementById('result-image');
+        if (question[response].resultImage) {
+          resultImage.src = question[response].resultImage;
+          resultImage.style.display = 'block';
+        } else {
+          resultImage.style.display = 'none';
+        }
 
-  document.getElementById('question-section').style.display = 'none';
-  document.getElementById('result-section').style.display = 'block';
-} else if (typeof question[response] === 'string') {
-  step++;
-  updateQuestion();
-}
-
+        document.getElementById('question-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+      } else if (typeof question[response] === 'string') {
+        step++;
+        updateQuestion();
+      }
     }
 
     function updateQuestion() {
@@ -223,9 +226,7 @@
     }
 
     function showHow() {
-      const explanationText = document.getElementById('explanation-text');
-      explanationText.textContent = questions[step].how || "No explanation available.";
-      document.getElementById('explanation-box').style.display = 'block';
+      document.getElementById('how-section').style.display = 'block';
     }
 
     function closeExplanation() {
