@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Peripheral Troubleshooting</title>
+  <link rel="icon" href="Images/PC Troubleshooting.png" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Peripheral Troubleshooting Assistant</h2>
+
+    <div id="question-section">
+      <p id="question"></p>
+      <p id="hint" class="hint"></p>
+
+      <div class="image-frame">
+        <img id="hint-image" src="Images/printer-start.png" alt="Hint image">
+      </div>
+
+      <button onclick="answer('yes')">Yes</button>
+      <button onclick="answer('no')">No</button>
+      <button onclick="showWhy()">Why?</button>
+
+      <div id="explanation-box" style="display: none; margin-top: 20px;">
+        <div class="solution-container">
+          <h3>Explanation</h3>
+          <p id="explanation-text"></p>
+          <button onclick="closeExplanation()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result-section" style="display: none;">
+      <div class="solution-container">
+        <h3>Recommended Action</h3>
+        <p id="recommendation"></p>
+      </div>
+      
+      <div class="image-frame">
+        <img id="result-image" src="" alt="Result image" style="display: none;">
+      </div>
+ 
+      <div class="conclusion-container">
+        <h3>Conclusion</h3>
+        <p id="conclusion"></p>
+      </div>
+
+      <button onclick="showHow()">How?</button>
+      
+      <div id="how-section" class="conclusion-container" style="display: none;">
+        <h3>How It Was Concluded</h3>
+        <p id="how-text"></p>
+      </div>
+
+      <button onclick="location.reload()">Restart</button>
+    </div>
+
+    <a href="troubleshoot.html" class="back-button">← Back</a>
+  </div>
+
+  <script>
+   const questions = [
+  {
+    q: "Are print jobs stuck in queue or does the printer show 'offline' status despite being turned on?",
+    hint: "💡 Check the printer queue and ensure the printer is online in system settings.",
+    image: "Images/printerQueue.png",
+    yes: "Does Device Manager show 'Unknown Device' or error codes like Code 28 or 39?",
+    no: {
+      rec: "Printer appears connected and ready.",
+      con: "No queue issues or offline status",
+      how: "You answered 'No', meaning the printer is recognized and idle. Proceed to test printing if not already done."
+    },
+    why: "To determine if the system is sending jobs to the printer and if it is recognized."
+  },
+  {
+    q: "Does Device Manager show 'Unknown Device' or error codes like Code 28 or 39?",
+    hint: "💡 Open Device Manager and inspect the printer under 'Printers' or 'Unknown Devices'.",
+    image: "Images/error28.png",
+    yes: "Have you reinstalled the printer driver manually from the official website?",
+    no: {
+      rec: "Driver appears correctly installed. Proceed to test USB connection.",
+      con: "Driver seems functional",
+      how: "Since you answered 'No', the issue might be hardware-related."
+    },
+    why: "To check if the issue is driver-related."
+  },
+  {
+    q: "Have you reinstalled the printer driver manually from the official website?",
+    hint: "💡 Download the latest driver from the manufacturer’s support page and reinstall it.",
+    image: "Images/Printerdriver.png",
+    yes: "Does the printer still fail to print after reinstalling the driver?",
+    no: {
+      rec: "Driver reinstall resolved the issue.",
+      con: "Driver issue resolved",
+      how: "You answered 'No', indicating the driver reinstall worked."
+    },
+    why: "To confirm if a fresh driver installation solves the problem."
+  },
+  {
+    q: "Does the printer still fail to print after reinstalling the driver?",
+    hint: "💡 Try printing a test page after reinstalling the driver.",
+    image: "Images/TestPage.png",
+    yes: "Does the printer function when connected to another USB port on the same PC using the same cable?",
+    no: {
+      rec: "Printer is now functional after reinstall.",
+      con: "Driver reinstall resolved issue",
+      how: "You answered 'No', so the problem was resolved by the reinstall."
+    },
+    why: "To check if the issue persists post driver fix."
+  },
+  {
+    q: "Does the printer function when connected to another USB port on the same PC using the same cable?",
+    hint: "💡 Unplug from current port and use a different USB port on the same PC.",
+    image: "Images/printerUSBPort.jpg",
+    yes: {
+      rec: "Replace or avoid using faulty USB port.",
+      con: "Faulty USB port identified",
+      resultImage: "Images/otherUSBPort.jpg",
+      how: "You answered 'Yes'. The original port is faulty."
+    },
+    no: "Does the printer work when using a different USB cable?",
+    why: "To isolate the problem to the USB port."
+  },
+  {
+    q: "Does the printer work when using a different USB cable?",
+    hint: "💡 Replace the cable with a known working one.",
+    image: "Images/printerCable.jpg",
+    yes: {
+      rec: "Replace the original USB cable.",
+      con: "Faulty USB cable identified",
+      resultImage: "Images/usbPrinterCable.jpg",
+      how: "You answered 'Yes'. The cable is faulty and should be replaced. "
+    },
+    no: "Does the printer function when connected to another PC with the same OS and drivers?",
+    why: "To determine if the USB cable is the problem."
+  },
+  {
+    q: "Does the printer function when connected to another PC with the same OS and drivers?",
+    hint: "💡 Test the printer on a different computer with identical driver setup.",
+    image: "Images/printerOtherPC.png",
+    yes: {
+      rec: "Check Windows printer spooler service (services.msc).",
+      con: "Possible spooler service issue",
+      resultImage: "Images/printerSpooler.png",
+      how: "You answered 'Yes', indicating the original PC may have OS/Software issues."
+    },
+    no: {
+      rec: "Printer may be faulty – consider professional servicing.",
+      con: "Printer is faulty",
+      how: "You answered 'No'. The issue is confirmed to be with the printer itself.",
+      resultImage: "Images/faultyPrinter.png"
+    },
+    why: "To confirm whether the printer issue is with the hardware itself."
+  }
+];
+    let step = 0;
+
+    function answer(response) {
+      const question = questions[step];
+      const recommendation = document.getElementById('recommendation');
+      const conclusion = document.getElementById('conclusion');
+      const howText = document.getElementById('how-text');
+
+      if (typeof question[response] === 'object') {
+        recommendation.textContent = question[response].rec;
+        conclusion.textContent = question[response].con;
+        howText.textContent = question[response].how || '';
+        
+        document.getElementById('how-section').style.display = 'none';
+
+        const resultImage = document.getElementById('result-image');
+        if (question[response].resultImage) {
+          resultImage.src = question[response].resultImage;
+          resultImage.style.display = 'block';
+        } else {
+          resultImage.style.display = 'none';
+        }
+
+        document.getElementById('question-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+      } else if (typeof question[response] === 'string') {
+        step++;
+        updateQuestion();
+      }
+    }
+
+    function updateQuestion() {
+      const q = questions[step];
+      document.getElementById('question').textContent = q.q;
+      document.getElementById('hint').textContent = q.hint || '';
+      document.getElementById('hint-image').src = q.image || '';
+      document.getElementById('hint-image').alt = `Step ${step + 1}`;
+    }
+
+    function showWhy() {
+      const explanationText = document.getElementById('explanation-text');
+      explanationText.textContent = questions[step].why || "No explanation available.";
+      document.getElementById('explanation-box').style.display = 'block';
+    }
+
+    function showHow() {
+      document.getElementById('how-section').style.display = 'block';
+    }
+
+    function closeExplanation() {
+      document.getElementById('explanation-box').style.display = 'none';
+    }
+
+    window.onload = updateQuestion;
+  </script>
+</body>
+</html>
